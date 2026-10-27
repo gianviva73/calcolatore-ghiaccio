@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calcolo Ghiaccio e Diluizione - Apothecary Mixology</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=IM+Fell+English:ital@0;1&display=swap" rel="stylesheet">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- FontAwesome for Vintage Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        parchment: {
+                            100: '#FAF6ED',
+                            200: '#F4ECD8',
+                            300: '#E8DCB8',
+                            400: '#D6C496',
+                            800: '#4A3E2C',
+                            900: '#2C2214'
+                        },
+                        bronze: {
+                            400: '#D4AF37',
+                            500: '#C59B27',
+                            600: '#AA7C11',
+                            700: '#8B6508',
+                            800: '#5C4306'
+                        },
+                        apothecary: {
+                            ink: '#1C160C',
+                            burgundy: '#5B1E1E',
+                            amber: '#8C4D05',
+                            glass: '#2D4A3E'
+                        }
+                    },
+                    fontFamily: {
+                        cinzel: ['Cinzel', 'serif'],
+                        playfair: ['Playfair Display', 'serif'],
+                        fell: ['IM Fell English', 'serif']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #2C2214;
+            background-image: radial-gradient(#4A3E2C 1px, transparent 1px);
+            background-size: 20px 20px;
+            color: #1C160C;
+            font-family: 'Playfair Display', Georgia, serif;
+        }
+
+        /* Parchment Texture Card Style */
+        .parchment-card {
+            background-color: #F4ECD8;
+            background-image: radial-gradient(#E8DCB8 1px, transparent 1px);
+            background-size: 16px 16px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.5);
+            border: 2px solid #AA7C11;
+            position: relative;
+        }
+
+        /* Vintage Engraved Double Border Effect */
+        .vintage-border {
+            border: 1px solid #8B6508;
+            outline: 3px double #AA7C11;
+            outline-offset: -6px;
+        }
+
+        /* Ornate Corner Decorations */
+        .corner-ornament {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border-color: #8B6508;
+            pointer-events: none;
+        }
+        .corner-tl { top: 4px; left: 4px; border-top: 2px solid; border-left: 2px solid; }
+        .corner-tr { top: 4px; right: 4px; border-top: 2px solid; border-right: 2px solid; }
+        .corner-bl { bottom: 4px; left: 4px; border-bottom: 2px solid; border-left: 2px solid; }
+        .corner-br { bottom: 4px; right: 4px; border-bottom: 2px solid; border-right: 2px solid; }
+
+        /* Custom Bronze Button */
+        .btn-bronze {
+            background: linear-gradient(135deg, #D4AF37 0%, #AA7C11 50%, #8B6508 100%);
+            color: #FAF6ED;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.6);
+            border: 1px solid #FAF6ED;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+            transition: all 0.2s ease;
+        }
+        .btn-bronze:hover {
+            background: linear-gradient(135deg, #F5D77F 0%, #C59B27 50%, #AA7C11 100%);
+            transform: translateY(-1px);
+            box-shadow: 0 6px 10px rgba(0,0,0,0.4);
+        }
+        .btn-bronze.active {
+            background: linear-gradient(135deg, #5B1E1E 0%, #3D1313 100%);
+            border-color: #D4AF37;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.6);
+        }
+
+        /* Tab Switcher Styling */
+        .tab-btn {
+            font-family: 'Cinzel', serif;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+        }
+        .tab-btn.active-tab {
+            background-color: #F4ECD8;
+            color: #5B1E1E;
+            border-bottom: 3px solid #5B1E1E;
+        }
+
+        /* Range Slider Styling */
+        input[type=range] {
+            accent-color: #8B6508;
+        }
+
+        /* Scrollbar Styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #2C2214;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #AA7C11;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body class="min-h-screen py-6 px-3 sm:px-6 lg:px-8">
+
+    <div class="max-w-6xl mx-auto">
+
+        <!-- HEADER PRINCIPALE -->
+        <header class="text-center mb-8 parchment-card p-6 rounded-lg vintage-border">
+            <div class="corner-ornament corner-tl"></div>
+            <div class="corner-ornament corner-tr"></div>
+            <div class="corner-ornament corner-bl"></div>
+            <div class="corner-ornament corner-br"></div>
+
+            <div class="flex justify-center items-center gap-3 mb-2">
+                <i class="fa-solid font-thin fa-flask-vial text-3xl text-bronze-700"></i>
+                <h1 class="font-cinzel text-3xl sm:text-4xl font-bold tracking-widest text-apothecary-ink">
+                    COMPENDIO ALCHIMICO DI DILUIZIONE
+                </h1>
+                <i class="fa-solid fa-mortar-pestle text-3xl text-bronze-700"></i>
+            </div>
+            <p class="font-fell italic text-lg sm:text-xl text-apothecary-amber">
+                — Formulario Fisico-Matematico per la Perfetta Miscelazione & Gestione del Ghiaccio —
+            </p>
+
+            <!-- TABS DI NAVIGAZIONE -->
+            <div class="flex flex-wrap justify-center gap-2 mt-6 border-t border-bronze-600/30 pt-4">
+                <button id="nav-calc" onclick="switchTab('calc')" class="tab-btn active-tab px-6 py-2 rounded-t-md font-semibold text-sm sm:text-base border border-b-0 border-bronze-700 flex items-center gap-2">
+                    <i class="fa-solid fa-calculator"></i> Calcolatore Interattivo
+                </button>
+                <button id="nav-guide" onclick="switchTab('guide')" class="tab-btn bg-parchment-300/60 text-parchment-800 hover:bg-parchment-300 px-6 py-2 rounded-t-md font-semibold text-sm sm:text-base border border-b-0 border-bronze-700 flex items-center gap-2">
+                    <i class="fa-solid fa-book-open"></i> Guida & Fisica dell'Alchimista
+                </button>
+            </div>
+        </header>
+
+        <!-- SEZIONE 1: CALCOLATORE INTERATTIVO -->
+        <div id="section-calc" class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            
+            <!-- PANNELLO INPUT (7 colonne) -->
+            <div class="lg:col-span-7 parchment-card p-6 rounded-lg vintage-border">
+                <div class="corner-ornament corner-tl"></div>
+                <div class="corner-ornament corner-tr"></div>
+                <div class="corner-ornament corner-bl"></div>
+                <div class="corner-ornament corner-br"></div>
+
+                <h2 class="font-cinzel text-xl font-bold text-apothecary-burgundy border-b border-bronze-600/40 pb-2 mb-6 flex items-center gap-2">
+                    <i class="fa-solid fa-sliders"></i> Parametri del Preparato
+                </h2>
+
+                <!-- 1. SELEZIONE TECNICA -->
+                <div class="mb-6">
+                    <label class="block font-cinzel text-sm font-semibold text-apothecary-ink mb-2">
+                        1. Tecnica di Miscelazione
+                    </label>
+                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-2" id="tech-selector">
+                        <button type="button" onclick="setTechnique('shaken')" class="btn-bronze tech-btn active p-2 text-xs sm:text-sm rounded font-cinzel font-semibold flex items-center justify-center gap-1">
+                            <i class="fa-solid fa-shuttle-space rotate-45"></i> Shaken (Shakerato)
+                        </button>
+                        <button type="button" onclick="setTechnique('stirred')" class="btn-bronze tech-btn p-2 text-xs sm:text-sm rounded font-cinzel font-semibold flex items-center justify-center gap-1">
+                            <i class="fa-solid fa-spoon"></i> Stirred (Mescolato)
+                        </button>
+                        <button type="button" onclick="setTechnique('built')" class="btn-bronze tech-btn p-2 text-xs sm:text-sm rounded font-cinzel font-semibold flex items-center justify-center gap-1">
+                            <i class="fa-solid fa-glass-water"></i> Built on Ice
+                        </button>
+                        <button type="button" onclick="setTechnique('swizzled')" class="btn-bronze tech-btn p-2 text-xs sm:text-sm rounded font-cinzel font-semibold flex items-center justify-center gap-1">
+                            <i class="fa-solid fa-snowflake"></i> Swizzled / Crushed
+                        </button>
+                        <button type="button" onclick="setTechnique('blended')" class="btn-bronze tech-btn p-2 text-xs sm:text-sm rounded font-cinzel font-semibold flex items-center justify-center gap-1">
+                            <i class="fa-solid fa-blender"></i> Blended (Frullato)
+                        </button>
+                        <button type="button" onclick="setTechnique('throwing')" class="btn-bronze tech-btn p-2 text-xs sm:text-sm rounded font-cinzel font-semibold flex items-center justify-center gap-1">
+                            <i class="fa-solid fa-arrows-up-down"></i> Throwing
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 2. SELEZIONE TIPO DI GHIACCIO -->
+                <div class="mb-6">
+                    <label class="block font-cinzel text-sm font-semibold text-apothecary-ink mb-2">
+                        2. Tipologia e Natura del Ghiaccio
+                    </label>
+                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-2" id="ice-selector">
+                        <button type="button" onclick="setIceType('standard')" class="btn-bronze ice-btn active p-2 text-xs sm:text-sm rounded font-cinzel flex items-center justify-center gap-1">
+                            <i class="fa-solid fa-cube"></i> Cubetti Standard
+                        </button>
+                        <button type="button" onclick="setIceType('chunk')" class="btn-bronze ice-btn p-2 text-xs sm:text-sm rounded font-cinzel flex items-center justify-center gap-1">
+                            <i class="fa-solid fa-cubes-stacked"></i> Chunk / Cubo XXL
+                        </button>
+                        <button type="button" onclick="setIceType('cracked')" class="btn-bronze ice-btn p-2 text-xs sm:text-sm rounded font-cinzel flex items-center justify-center gap-1">
+                            <i class="fa-solid fa-hill-rockslide"></i> Cracked (Tritato Grosso)
+                        </button>
+                        <button type="button" onclick="setIceType('crushed')" class="btn-bronze ice-btn p-2 text-xs sm:text-sm rounded font-cinzel flex items-center justify-center gap-1">
+                            <i class="fa-solid fa-icicles"></i> Crushed (Fine)
+                        </button>
+                        <button type="button" onclick="setIceType('wet')" class="btn-bronze ice-btn p-2 text-xs sm:text-sm rounded font-cinzel flex items-center justify-center gap-1">
+                            <i class="fa-solid fa-droplet text-blue-300"></i> Bagnato (0°C)
+                        </button>
+                        <button type="button" onclick="setIceType('deepfreezer')" class="btn-bronze ice-btn p-2 text-xs sm:text-sm rounded font-cinzel flex items-center justify-center gap-1">
+                            <i class="fa-solid fa-temperature-arrow-down"></i> Secco (-18°C)
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 3. SLIDERS INPUT -->
+                <div class="space-y-5 bg-parchment-100/60 p-4 rounded border border-bronze-600/30">
+                    
+                    <!-- Volume Iniziale -->
+                    <div>
+                        <div class="flex justify-between items-center mb-1">
+                            <label class="font-cinzel text-xs font-bold text-apothecary-ink">Volume Liquido Iniziale (ml)</label>
+                            <span id="val-vol" class="font-mono text-sm font-bold text-apothecary-burgundy">90 ml</span>
+                        </div>
+                        <input type="range" id="inp-vol" min="30" max="300" step="5" value="90" oninput="calculate()" class="w-full cursor-pointer">
+                    </div>
+
+                    <!-- ABV Iniziale -->
+                    <div>
+                        <div class="flex justify-between items-center mb-1">
+                            <label class="font-cinzel text-xs font-bold text-apothecary-ink">Gradazione Alcolica Iniziale (ABV %)</label>
+                            <span id="val-abv" class="font-mono text-sm font-bold text-apothecary-burgundy">25.0 %</span>
+                        </div>
+                        <input type="range" id="inp-abv" min="0" max="60" step="0.5" value="25" oninput="calculate()" class="w-full cursor-pointer">
+                    </div>
+
+                    <!-- Temp Ingredienti -->
+                    <div>
+                        <div class="flex justify-between items-center mb-1">
+                            <label class="font-cinzel text-xs font-bold text-apothecary-ink">Temperatura Ingredienti Liquidi (°C)</label>
+                            <span id="val-temp-ing" class="font-mono text-sm font-bold text-apothecary-burgundy">20.0 °C</span>
+                        </div>
+                        <input type="range" id="inp-temp-ing" min="-10" max="30" step="1" value="20" oninput="calculate()" class="w-full cursor-pointer">
+                    </div>
+
+                    <!-- Temp Ghiaccio -->
+                    <div>
+                        <div class="flex justify-between items-center mb-1">
+                            <label class="font-cinzel text-xs font-bold text-apothecary-ink">Temperatura del Ghiaccio (°C)</label>
+                            <span id="val-temp-ice" class="font-mono text-sm font-bold text-apothecary-burgundy">-15.0 °C</span>
+                        </div>
+                        <input type="range" id="inp-temp-ice" min="-25" max="0" step="1" value="-15" oninput="calculate()" class="w-full cursor-pointer">
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- PANNELLO RISULTATI (5 colonne) -->
+            <div class="lg:col-span-5 flex flex-col gap-6">
+                
+                <!-- RISULTATI ISTANTANEI -->
+                <div class="parchment-card p-6 rounded-lg vintage-border flex-1">
+                    <div class="corner-ornament corner-tl"></div>
+                    <div class="corner-ornament corner-tr"></div>
+                    <div class="corner-ornament corner-bl"></div>
+                    <div class="corner-ornament corner-br"></div>
+
+                    <h2 class="font-cinzel text-xl font-bold text-apothecary-burgundy border-b border-bronze-600/40 pb-2 mb-6 flex items-center gap-2">
+                        <i class="fa-solid fa-hourglass-half"></i> Verdetto Termodinamico
+                    </h2>
+
+                    <div class="grid grid-cols-2 gap-4 mb-6">
+                        
+                        <div class="bg-parchment-100 p-3 rounded border border-bronze-600/40 text-center">
+                            <div class="font-cinzel text-xs text-apothecary-amber font-semibold">DILUIZIONE ESTIMATA</div>
+                            <div id="out-dil-pct" class="font-mono text-2xl font-bold text-apothecary-burgundy">32.5%</div>
+                            <div id="out-dil-ml" class="font-fell italic text-xs text-apothecary-ink">+29.3 ml di acqua</div>
+                        </div>
+
+                        <div class="bg-parchment-100 p-3 rounded border border-bronze-600/40 text-center">
+                            <div class="font-cinzel text-xs text-apothecary-amber font-semibold">ABV FINALE ESTIMATO</div>
+                            <div id="out-final-abv" class="font-mono text-2xl font-bold text-apothecary-glass">18.9%</div>
+                            <div class="font-fell italic text-xs text-apothecary-ink">Grado alcolico servito</div>
+                        </div>
+
+                        <div class="bg-parchment-100 p-3 rounded border border-bronze-600/40 text-center">
+                            <div class="font-cinzel text-xs text-apothecary-amber font-semibold">VOLUME FINALE SERVIZIO</div>
+                            <div id="out-final-vol" class="font-mono text-2xl font-bold text-apothecary-ink">119 ml</div>
+                            <div class="font-fell italic text-xs text-apothecary-ink">Capacità coppa consigliata</div>
+                        </div>
+
+                        <div class="bg-parchment-100 p-3 rounded border border-bronze-600/40 text-center">
+                            <div class="font-cinzel text-xs text-apothecary-amber font-semibold">TEMP. FINALE STIMATA</div>
+                            <div id="out-final-temp" class="font-mono text-2xl font-bold text-blue-900">-4.2 °C</div>
+                            <div class="font-fell italic text-xs text-apothecary-ink">Punto d'equilibrio</div>
+                        </div>
+
+                    </div>
+
+                    <!-- TEMPO CONSIGLIATO -->
+                    <div class="bg-bronze-700/10 border border-bronze-600/50 p-4 rounded text-center mb-6">
+                        <div class="font-cinzel text-xs font-bold text-apothecary-burgundy tracking-wide">TEMPO DI LAVORAZIONE OTTIMALE</div>
+                        <div id="out-time" class="font-mono text-3xl font-extrabold text-bronze-800 my-1">12 - 14 SECONDI</div>
+                        <p id="out-time-note" class="font-fell italic text-xs text-apothecary-ink">Shakerata vigorosa con ghiaccio asciutto da freezer</p>
+                    </div>
+
+                    <!-- TABELLA PRIMA VS DOPO -->
+                    <h3 class="font-cinzel text-xs font-bold text-apothecary-ink mb-2 uppercase tracking-wider">
+                        Confronto Sintetico: Prima vs Dopo
+                    </h3>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left font-mono text-xs border-collapse">
+                            <thead>
+                                <tr class="bg-bronze-700 text-parchment-100 font-cinzel">
+                                    <th class="p-1.5 border border-bronze-800">Parametro</th>
+                                    <th class="p-1.5 border border-bronze-800">Versato (Prima)</th>
+                                    <th class="p-1.5 border border-bronze-800">Servito (Dopo)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="bg-parchment-100/80">
+                                    <td class="p-1.5 border border-bronze-600/30 font-semibold font-cinzel">Volume Liquidi</td>
+                                    <td id="tbl-vol-before" class="p-1.5 border border-bronze-600/30">90 ml</td>
+                                    <td id="tbl-vol-after" class="p-1.5 border border-bronze-600/30 text-apothecary-burgundy font-bold">119.3 ml</td>
+                                </tr>
+                                <tr class="bg-parchment-200/50">
+                                    <td class="p-1.5 border border-bronze-600/30 font-semibold font-cinzel">Alcol Volumemetrico</td>
+                                    <td id="tbl-abv-before" class="p-1.5 border border-bronze-600/30">25.0 %</td>
+                                    <td id="tbl-abv-after" class="p-1.5 border border-bronze-600/30 text-apothecary-glass font-bold">18.9 %</td>
+                                </tr>
+                                <tr class="bg-parchment-100/80">
+                                    <td class="p-1.5 border border-bronze-600/30 font-semibold font-cinzel">Temperatura (°C)</td>
+                                    <td id="tbl-temp-before" class="p-1.5 border border-bronze-600/30">20.0 °C</td>
+                                    <td id="tbl-temp-after" class="p-1.5 border border-bronze-600/30 text-blue-900 font-bold">-4.2 °C</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- SEZIONE 2: GUIDA ALL'USO E SPIEGAZIONE SCIENTIFICA -->
+        <div id="section-guide" class="hidden space-y-8">
+            
+            <!-- 1. MANUALE DI ISTRUZIONI STEP-BY-STEP -->
+            <div class="parchment-card p-6 rounded-lg vintage-border">
+                <div class="corner-ornament corner-tl"></div>
+                <div class="corner-ornament corner-tr"></div>
+                <div class="corner-ornament corner-bl"></div>
+                <div class="corner-ornament corner-br"></div>
+
+                <h2 class="font-cinzel text-2xl font-bold text-apothecary-burgundy border-b border-bronze-600/40 pb-2 mb-4 flex items-center gap-2">
+                    <i class="fa-solid fa-compass"></i> Guida Rapida all'Uso del Calcolatore
+                </h2>
+
+                <p class="font-fell text-base text-apothecary-ink mb-6">
+                    Questo strumento calcola la <strong>diluizione dinamica</strong> e la <strong>temperatura finale d'equilibrio</strong> dei tuoi cocktail basandosi sulle leggi della termodinamica della miscelazione. Segui questi 4 semplici passaggi per impostare la tua ricetta:
+                </p>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div class="bg-parchment-100 p-4 rounded border border-bronze-600/30">
+                        <div class="font-cinzel font-bold text-sm text-apothecary-amber mb-1">Passo I: Tecnica</div>
+                        <p class="text-xs text-apothecary-ink">Seleziona come intendi miscelare (Shake, Stir, Swizzle, Throwing, ecc.). Ogni tecnica trasferisce un quantitativo di energia cinetica differente.</p>
+                    </div>
+                    <div class="bg-parchment-100 p-4 rounded border border-bronze-600/30">
+                        <div class="font-cinzel font-bold text-sm text-apothecary-amber mb-1">Passo II: Ghiaccio</div>
+                        <p class="text-xs text-apothecary-ink">Scegli la forma del ghiaccio (Cubetti, Chunk, Crushed) e la sua condizione termica (Bagnato a 0°C o Secco da freezer a -18°C).</p>
+                    </div>
+                    <div class="bg-parchment-100 p-4 rounded border border-bronze-600/30">
+                        <div class="font-cinzel font-bold text-sm text-apothecary-amber mb-1">Passo III: Liquidi</div>
+                        <p class="text-xs text-apothecary-ink">Imposta il volume totale versato (ml), il grado alcolico calcolato prima del ghiaccio (ABV %) e la temperatura iniziale delle bottiglie.</p>
+                    </div>
+                    <div class="bg-parchment-100 p-4 rounded border border-bronze-600/30">
+                        <div class="font-cinzel font-bold text-sm text-apothecary-amber mb-1">Passo IV: Verdetto</div>
+                        <p class="text-xs text-apothecary-ink">Leggi istantaneamente l'acqua totale aggiunta, la gradazione finale servita al cliente e il tempo massimo di lavorazione per evitare cocktail annaffiati.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2. LA FISICA DELLA DILUIZIONE (TEORIA SCIENTIFICA) -->
+            <div class="parchment-card p-6 rounded-lg vintage-border">
+                <div class="corner-ornament corner-tl"></div>
+                <div class="corner-ornament corner-tr"></div>
+                <div class="corner-ornament corner-bl"></div>
+                <div class="corner-ornament corner-br"></div>
+
+                <h2 class="font-cinzel text-2xl font-bold text-apothecary-burgundy border-b border-bronze-600/40 pb-2 mb-4 flex items-center gap-2">
+                    <i class="fa-solid fa-atom"></i> La Fisica della Diluizione: Il Ghiaccio come Ingrediente
+                </h2>
+
+                <div class="space-y-4 font-fell text-sm sm:text-base text-apothecary-ink leading-relaxed">
+                    <p>
+                        Nel bartending scientifico vige il principio fondamentale formulato da Dave Arnold: <strong>" Non c'è raffreddamento senza diluizione "</strong> (<em>There is no cooling without dilution</em>).
+                    </p>
+                    
+                    <div class="bg-parchment-100/90 p-4 rounded border-l-4 border-bronze-700 font-serif italic text-apothecary-burgundy my-4">
+                        Per abbassare la temperatura di una miscela alcolica al di sotto di 0°C, il ghiaccio non si limita a scambiare calore sensibile: deve necessariamente liquefarsi per assorbire il calore latente di fusione (334 Joules per grammo d'acqua).
+                    </div>
+
+                    <h3 class="font-cinzel font-bold text-base text-apothecary-amber mt-4">1. Il Calore Latente di Fusione</h3>
+                    <p>
+                        Raffreddare il liquido da +20°C a 0°C richiede pochissima energia rispetto a quella assorbita dalla fusione del ghiaccio. Più il cocktail deve diventare freddo, più grammi di ghiaccio devono sciogliersi e trasformarsi in acqua fusa. L'acqua fusa <strong>non è un difetto</strong>, ma l'ingrediente essenziale che ammorbidisce l'aggressività dell'alcol puro e apre gli aromi del drink.
+                    </p>
+
+                    <h3 class="font-cinzel font-bold text-base text-apothecary-amber mt-4">2. Il Punto di Congelamento delle Soluzioni Alcoliche</h3>
+                    <p>
+                        L'alcol etilico abbassa il punto di congelamento dell'acqua (abbassamento crioscopico). Questo spiega perché uno Shakerato vigoroso con alcol al 25% ABV può raggiungere temperature negative (fino a -5°C o -7°C) rimanendo perfettamente liquido.
+                    </p>
+                </div>
+            </div>
+
+            <!-- 3. GUIDA TECNICHE & GHIACCIO -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                
+                <!-- Scheda Tecniche -->
+                <div class="parchment-card p-6 rounded-lg vintage-border">
+                    <div class="corner-ornament corner-tl"></div>
+                    <div class="corner-ornament corner-tr"></div>
+                    <div class="corner-ornament corner-bl"></div>
+                    <div class="corner-ornament corner-br"></div>
+
+                    <h3 class="font-cinzel text-xl font-bold text-apothecary-burgundy border-b border-bronze-600/40 pb-2 mb-4 flex items-center gap-2">
+                        <i class="fa-solid fa-list-check"></i> Tecniche & Tassi di Diluizione
+                    </h3>
+
+                    <ul class="space-y-3 font-fell text-xs sm:text-sm text-apothecary-ink">
+                        <li class="border-b border-bronze-600/20 pb-2">
+                            <strong class="font-cinzel text-apothecary-burgundy">Shaken (Shakerato):</strong> Diluizione tipica <strong>30% - 38%</strong>. Lo shock meccanico rompe il ghiaccio e crea microscopiche bolle d'aria (aerazione), offrendo una texture vellutata e rapido raffreddamento (-4°C / -6°C).
+                        </li>
+                        <li class="border-b border-bronze-600/20 pb-2">
+                            <strong class="font-cinzel text-apothecary-burgundy">Stirred (Mescolato):</strong> Diluizione tipica <strong>20% - 25%</strong>. Movimento fluido senza rompersi. Mantiene il cocktail setoso, limpido e ad una temperatura d'equilibrio attorno ai -1°C / -3°C.
+                        </li>
+                        <li class="border-b border-bronze-600/20 pb-2">
+                            <strong class="font-cinzel text-apothecary-burgundy">Throwing:</strong> Diluizione tipica <strong>22% - 28%</strong>. Aerazione senza eccessiva frammentazione del ghiaccio. Ottimo per Vermouth e cocktail liquorosi.
+                        </li>
+                        <li class="border-b border-bronze-600/20 pb-2">
+                            <strong class="font-cinzel text-apothecary-burgundy">Swizzle & Crushed Ice:</strong> Diluizione elevata <strong>40% - 50%+</strong>. L'elevata superficie del ghiaccio tritato scioglie rapidamente molta acqua, ideale per Tiki e drink ad alto tenore zuccherino.
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Scheda Ghiaccio -->
+                <div class="parchment-card p-6 rounded-lg vintage-border">
+                    <div class="corner-ornament corner-tl"></div>
+                    <div class="corner-ornament corner-tr"></div>
+                    <div class="corner-ornament corner-bl"></div>
+                    <div class="corner-ornament corner-br"></div>
+
+                    <h3 class="font-cinzel text-xl font-bold text-apothecary-burgundy border-b border-bronze-600/40 pb-2 mb-4 flex items-center gap-2">
+                        <i class="fa-solid fa-cubes"></i> Comportamento Termico del Ghiaccio
+                    </h3>
+
+                    <ul class="space-y-3 font-fell text-xs sm:text-sm text-apothecary-ink">
+                        <li class="border-b border-bronze-600/20 pb-2">
+                            <strong class="font-cinzel text-apothecary-burgundy">Ghiaccio Secco (-18°C):</strong> Estratto direttamente dal congelatore. È asciutto al tatto. Assorbe calore prima di iniziare a fondersi, permettendo maggior raffreddamento prima di diluire.
+                        </li>
+                        <li class="border-b border-bronze-600/20 pb-2">
+                            <strong class="font-cinzel text-apothecary-burgundy">Ghiaccio Bagnato (0°C):</strong> Rimasto nel pozzetto a temperatura ambiente. Ha uno strato d'acqua superficiale che aggiunge immediata diluizione "non voluta" (fino a 10-15 ml extra d'acqua al versamento).
+                        </li>
+                        <li class="border-b border-bronze-600/20 pb-2">
+                            <strong class="font-cinzel text-apothecary-burgundy">Large Chunk / Sfere:</strong> Il rapporto superficie/volume è minimo. Scioglimento lento nel bicchiere di servizio, perfetto per mantenere freddo un Negroni senza annacquarlo.
+                        </li>
+                    </ul>
+                </div>
+
+            </div>
+
+            <!-- 4. FAQ & CONSIGLI DI LABORATORIO -->
+            <div class="parchment-card p-6 rounded-lg vintage-border">
+                <div class="corner-ornament corner-tl"></div>
+                <div class="corner-ornament corner-tr"></div>
+                <div class="corner-ornament corner-bl"></div>
+                <div class="corner-ornament corner-br"></div>
+
+                <h2 class="font-cinzel text-2xl font-bold text-apothecary-burgundy border-b border-bronze-600/40 pb-2 mb-4 flex items-center gap-2">
+                    <i class="fa-solid fa-lightbulb"></i> Consigli Practici di Laboratorio & FAQ
+                </h2>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 font-fell text-xs sm:text-sm text-apothecary-ink">
+                    
+                    <div class="bg-parchment-100 p-4 rounded border border-bronze-600/30">
+                        <h4 class="font-cinzel font-bold text-apothecary-burgundy mb-1">Come gestire i cocktail premiscelati (Batching)?</h4>
+                        <p>Se prepari cocktail in bottiglia da conservare in freezer (-18°C), dev'essere aggiunta l'acqua di diluizione direttamente nella bottiglia prima del congelamento. Utilizza questo calcolatore per sapere esattamente quanti ml di acqua distillata aggiungere per ogni porzione.</p>
+                    </div>
+
+                    <div class="bg-parchment-100 p-4 rounded border border-bronze-600/30">
+                        <h4 class="font-cinzel font-bold text-apothecary-burgundy mb-1">Perché la temperatura delle bottiglie cambia tutto?</h4>
+                        <p>Liquori e distillati tenuti sulla bottigliera a 25°C sciolgono quasi il doppio del ghiaccio rispetto a bottiglie tenute in frigo a 4°C per raggiungere la stessa temperatura di servizio. Per drink poco diluiti, raffredda sempre gli ingredienti prima.</p>
+                    </div>
+
+                    <div class="bg-parchment-100 p-4 rounded border border-bronze-600/30">
+                        <h4 class="font-cinzel font-bold text-apothecary-burgundy mb-1">Come eliminare l'acqua in eccesso del ghiaccio bagnato?</h4>
+                        <p>Se usi ghiaccio dal pozzetto bar (a 0°C con velo d'acqua), scolalo sempre nello shaker o con uno strainer prima di versare i liquidi. In alternativa, effettua un "dry-shake" iniziale o aumenta la velocità del servizio.</p>
+                    </div>
+
+                    <div class="bg-parchment-100 p-4 rounded border border-bronze-600/30">
+                        <h4 class="font-cinzel font-bold text-apothecary-burgundy mb-1">Qual è il tempo limite di shakerata?</h4>
+                        <p>Dopo circa 12-15 secondi di shakerata vigorosa, la curva di raffreddamento si appiattisce e si raggiunge l'equilibrio termico. Continuare a shakerare oltre 18 secondi non raffredda ulteriormente il drink, ma continua solo a spaccare il ghiaccio e sovra-diluire.</p>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+
+        <!-- FOOTER -->
+        <footer class="mt-8 text-center text-xs font-cinzel text-parchment-300 opacity-80">
+            <p>Compendio d'Alchimia e Termodinamica del Bar — Formulario Mixology Advanced</p>
+        </footer>
+
+    </div>
+
+    <!-- LOGICA JAVASCRIPT PER CALCOLI E INTERFACCIA -->
+    <script>
+        // Stato Applicazione
+        const state = {
+            technique: 'shaken',
+            iceType: 'standard',
+            vol: 90,
+            abv: 25.0,
+            tempIngredients: 20.0,
+            tempIce: -15.0
+        };
+
+        // Fattori di diluizione base per tecnica
+        const techFactors = {
+            shaken: { baseDil: 0.33, time: "12 - 14 sec", note: "Shakerata vigorosa con ghiaccio asciutto" },
+            stirred: { baseDil: 0.22, time: "20 - 25 sec", note: "Mescolata fluida nel Mixing Glass" },
+            built: { baseDil: 0.15, time: "Immediato", note: "Diluizione lenta direttamente nel bicchiere" },
+            swizzled: { baseDil: 0.42, time: "15 - 20 sec", note: "Lavorazione rapida con Crushed Ice" },
+            blended: { baseDil: 0.55, time: "10 - 12 sec", note: "Emulsione totale nel blender con ghiaccio" },
+            throwing: { baseDil: 0.25, time: "5 - 7 passaggi", note: "Aerazione e raffreddamento controllato" }
+        };
+
+        // Modificatori per tipo di ghiaccio
+        const iceModifiers = {
+            standard: { factor: 1.0, tempOffset: 0 },
+            chunk: { factor: 0.82, tempOffset: -1 },
+            cracked: { factor: 1.15, tempOffset: 1 },
+            crushed: { factor: 1.35, tempOffset: 2 },
+            wet: { factor: 1.25, tempOffset: 3 },
+            deepfreezer: { factor: 0.88, tempOffset: -2 }
+        };
+
+        // Switch Tabs Tra Calcolatore e Guida
+        function switchTab(tab) {
+            const calcSec = document.getElementById('section-calc');
+            const guideSec = document.getElementById('section-guide');
+            const btnCalc = document.getElementById('nav-calc');
+            const btnGuide = document.getElementById('nav-guide');
+
+            if(tab === 'calc') {
+                calcSec.classList.remove('hidden');
+                guideSec.classList.add('hidden');
+                btnCalc.classList.add('active-tab');
+                btnCalc.classList.remove('bg-parchment-300/60', 'text-parchment-800');
+                btnGuide.classList.remove('active-tab');
+                btnGuide.classList.add('bg-parchment-300/60', 'text-parchment-800');
+            } else {
+                calcSec.classList.add('hidden');
+                guideSec.classList.remove('hidden');
+                btnGuide.classList.add('active-tab');
+                btnGuide.classList.remove('bg-parchment-300/60', 'text-parchment-800');
+                btnCalc.classList.remove('active-tab');
+                btnCalc.classList.add('bg-parchment-300/60', 'text-parchment-800');
+            }
+        }
+
+        // Cambio Tecnica
+        function setTechnique(tech) {
+            state.technique = tech;
+            const buttons = document.querySelectorAll('#tech-selector .tech-btn');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+            calculate();
+        }
+
+        // Cambio Tipo Ghiaccio
+        function setIceType(ice) {
+            state.iceType = ice;
+            const buttons = document.querySelectorAll('#ice-selector .ice-btn');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+
+            // Autoregola slider temperatura ghiaccio se selezionato secco o bagnato
+            if(ice === 'wet') {
+                document.getElementById('inp-temp-ice').value = 0;
+            } else if(ice === 'deepfreezer') {
+                document.getElementById('inp-temp-ice').value = -18;
+            }
+
+            calculate();
+        }
+
+        // Algoritmo di Calcolo Termodinamico
+        function calculate() {
+            // Lettura valori da slider
+            state.vol = parseFloat(document.getElementById('inp-vol').value);
+            state.abv = parseFloat(document.getElementById('inp-abv').value);
+            state.tempIngredients = parseFloat(document.getElementById('inp-temp-ing').value);
+            state.tempIce = parseFloat(document.getElementById('inp-temp-ice').value);
+
+            // Aggiornamento etichette grafiche slider
+            document.getElementById('val-vol').innerText = state.vol + ' ml';
+            document.getElementById('val-abv').innerText = state.abv.toFixed(1) + ' %';
+            document.getElementById('val-temp-ing').innerText = state.tempIngredients.toFixed(1) + ' °C';
+            document.getElementById('val-temp-ice').innerText = state.tempIce.toFixed(1) + ' °C';
+
+            // 1. Calcolo Diluizione %
+            const techData = techFactors[state.technique];
+            const iceData = iceModifiers[state.iceType];
+
+            // Calcolo impatto temperatura iniziale ingredienti su diluizione extra
+            const tempDelta = Math.max(0, state.tempIngredients - 4) * 0.006; 
+            
+            // Percentuale di diluizione finale
+            let dilutionRatio = (techData.baseDil * iceData.factor) + tempDelta;
+            
+            // Limitazioni fisiche plausibili
+            if (dilutionRatio < 0.10) dilutionRatio = 0.10;
+            if (dilutionRatio > 0.65) dilutionRatio = 0.65;
+
+            const dilutionPct = dilutionRatio * 100;
+            const waterAddedMl = state.vol * dilutionRatio;
+            const finalVol = state.vol + waterAddedMl;
+
+            // 2. Calcolo ABV Finale
+            const alcoholMl = state.vol * (state.abv / 100);
+            const finalAbv = (alcoholMl / finalVol) * 100;
+
+            // 3. Stima Temperatura Finale (°C)
+            // Equazione empirica basata sull'abbassamento crioscopico in base all'ABV finale
+            let estimatedTemp = - (finalAbv * 0.22) - (Math.abs(state.tempIce) * 0.08) + iceData.tempOffset;
+            if(estimatedTemp > 1.5) estimatedTemp = 1.5;
+
+            // Aggiornamento interfaccia risultati
+            document.getElementById('out-dil-pct').innerText = dilutionPct.toFixed(1) + '%';
+            document.getElementById('out-dil-ml').innerText = '+' + waterAddedMl.toFixed(1) + ' ml di acqua';
+            
+            document.getElementById('out-final-abv').innerText = finalAbv.toFixed(1) + '%';
+            document.getElementById('out-final-vol').innerText = Math.round(finalVol) + ' ml';
+            document.getElementById('out-final-temp').innerText = estimatedTemp.toFixed(1) + ' °C';
+
+            document.getElementById('out-time').innerText = techData.time;
+            document.getElementById('out-time-note').innerText = techData.note;
+
+            // Aggiornamento Tabella Confronto
+            document.getElementById('tbl-vol-before').innerText = state.vol + ' ml';
+            document.getElementById('tbl-vol-after').innerText = Math.round(finalVol) + ' ml';
+
+            document.getElementById('tbl-abv-before').innerText = state.abv.toFixed(1) + ' %';
+            document.getElementById('tbl-abv-after').innerText = finalAbv.toFixed(1) + ' %';
+
+            document.getElementById('tbl-temp-before').innerText = state.tempIngredients.toFixed(1) + ' °C';
+            document.getElementById('tbl-temp-after').innerText = estimatedTemp.toFixed(1) + ' °C';
+        }
+
+        // Inizializzazione al caricamento
+        window.onload = function() {
+            calculate();
+        };
+    </script>
+</body>
+</html>
